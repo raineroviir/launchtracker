@@ -151,10 +151,3 @@ function receiveSchedule(schedule) {
     schedule
   }
 }
-// export async function fetchSchedule() {
-//   const schedule = await Parse.Cloud.run('schedule')
-//   return {
-//     type: types.RECEIVE_SCHEDULE,
-//     schedule
-//   }
-// }
