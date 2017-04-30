@@ -1,4 +1,4 @@
-import Parse from 'parse/react-native'
+// import Parse from 'parse/react-native'
 import App from './App'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -8,20 +8,23 @@ import {Fonts, Metrics, Colors} from './Themes'
 import { StatusBar, View, StyleSheet } from 'react-native'
 import MyNavigator from './MyNavigator'
 
-const APP_ID = 'spacexperience'
 import {serverURL} from './env'
-const store = configureStore()
+import realm from './realm'
 
-function initParse() {
-  Parse.initialize(APP_ID)
-  Parse.serverURL = `http://${serverURL}/parse`
+const preloadedState = {
+  notifications: {
+    enabled: realm.objects('Push')[0] ? realm.objects('Push')[0].enabled : false,
+    pushNotifications: [],
+    registered: false,
+    server: [],
+    seen: {}
+  }
 }
+const store = configureStore(preloadedState)
 
 export default class Setup extends React.Component {
-  componentWillMount() {
-    initParse()
-  }
   render() {
+    console.log(store.getState())
     return (
       <Provider store={store}>
         <MyNavigator />

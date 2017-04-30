@@ -23,11 +23,6 @@ class LaunchCellDetailView extends React.Component {
     }
   }
   componentDidMount() {
-    // let url = 'http://localhost:1337/api/parse-weather'
-    // fetch(url).then(response => response.json()).then(body => {
-    //   console.log(body)
-    //   this.setState({ weather: body })
-    // })
   }
   render() {
     const weatherReportAvailable = <View><Text>Weather: Launch day probability of violating launch weather constraints: {this.state.weather.percent}%

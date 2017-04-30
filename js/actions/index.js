@@ -1,34 +1,38 @@
 import * as types from '../types'
-import Parse from 'parse/react-native'
 import { Platform, VibrationIOS } from 'react-native'
 
 import {serverURL} from '../env'
 import type { ThunkAction } from './types'
+import PushNotification from 'react-native-push-notification'
+import realm from '../realm'
 
-const Notification = Parse.Object.extend('Notification');
+// export async function updateInstallation(updates) {
+//   const installation = await currentInstallation()
+//   installation.save(updates)
+// }
+//
 
-export async function updateInstallation(updates: Object = {}): Promise<void> {
-  const installation = await currentInstallation()
-  installation.save(updates)
+function createInstallation(installation): Object {
+  const url = `http://${serverURL}/installation`
+  return fetch(url, {method: 'post', body: installation}).then(response => console.log(response))
 }
 
-async function currentInstallation(): Promise<Parse.Installation> {
-  const installationId = await Parse._getInstallationId()
-  return new Parse.Installation({
-  installationId,
-  appName: 'spacexp',
-  deviceType: Platform.OS,
-  // TODO: Get this information from the app itself
-  appIdentifier: 'com.example.AwesomeSpaceXperience'
-  })
+async function currentInstallation() {
+  const installationId = realm.objects('Installation')[0].id
+  console.log(installationId)
+
+  return createInstallation({installationId: installationId, pushEnabled: true})
+
+  // return new Parse.Installation({
+  // installationId,
+  // appName: 'spacexp',
+  // deviceType: Platform.OS,
+  // appIdentifier: 'com.example.AwesomeSpaceXperience'
+  // })
 }
 
 export async function storeDeviceToken(deviceToken) {
-  await updateInstallation({
-    pushType: deviceToken.os,
-    deviceToken: deviceToken.token,
-    deviceTokenLastModified: Date.now(),
-  })
+  await updateInstallation(deviceToken)
   return {
     type: types.REGISTERED_PUSH_NOTIFICATIONS,
   }
@@ -45,23 +49,6 @@ function normalizeData(s: string | Object): Object {
   }
 }
 
-export function loadNotifications() {
-  query = new Parse.Query(Notification)
-  return (dispatch) => {
-    return query.find({
-      success: (list) => {
-        console.log('LOADED LIST', list)
-        InteractionManager.runAfterInteractions(() => {
-          dispatch(receiveNotifications(list))
-        })
-      },
-      error: (error) => {
-        console.log(error)
-      }
-    })
-  }
-}
-
 function receiveNotifications(list) {
   return {
     type: types.LOADED_NOTIFICATIONS,
@@ -71,11 +58,11 @@ function receiveNotifications(list) {
 
 export function receivePushNotification(notification): ThunkAction {
   return (dispatch) => {
-        console.log('FROM ACTIONS IS THE NOTIFICATION OBJECT:',notification)
+    console.log('FROM ACTIONS IS THE NOTIFICATION OBJECT:',notification)
     const {foreground} = notification
+    console.log(notification)
     const message = notification.message || notification.data.message
     const data = normalizeData(notification.data)
-
     if (!foreground) {
       dispatch(switchTab('notifications'))
     }
@@ -87,10 +74,6 @@ export function receivePushNotification(notification): ThunkAction {
       VibrationIOS.vibrate()
     }
 
-    if (data.e) {
-      console.log(e)
-      return
-    }
     const timestamp = new Date().getTime()
     dispatch({
       type: types.RECEIVED_PUSH_NOTIFICATION,
@@ -111,13 +94,26 @@ export function switchTab(tab) {
   }
 }
 
-export function turnOnPushNotifications(): Action {
-  console.log('turnOnPushNotifications')
+export function turnOnPushNotifications() {
+  let myPushStatus = realm.objects('Push')[0]
+  realm.write(() => {
+    myPushStatus.enabled = true
+  })
   return {
     type: types.TURNED_ON_PUSH_NOTIFICATIONS,
   }
 }
 
+export async function turnOffPushNotifications() {
+  // await PushNotification.abandonPermissions()
+  let myPushStatus = realm.objects('Push')[0]
+  realm.write(() => {
+    myPushStatus.enabled = false
+  })
+  return {
+    type: types.TURNED_OFF_PUSH_NOTIFICATIONS
+  }
+}
 export function shouldFetchSchedule(schedule) {
   return (dispatch) => {
     let currentDate = Date.now() - 86400

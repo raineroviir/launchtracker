@@ -26,22 +26,10 @@ class LaunchCellDetailView extends React.Component {
     }
   }
   render() {
-    const weatherReportAvailable = <View><Text>Weather: Launch day probability of violating launch weather constraints: {this.state.weather.percent}%
-    </Text>
-    <Text>Source: </Text>
-    <URLButton
-      url={this.state.weather.url}
-      buttonText={'Full Weather Report'}
-      viewStyle={{padding: 10,
-        backgroundColor: '#3B5998',
-        marginBottom: 10, }}/>
-    </View>
-    const noLaunch = <View><Text>Weather: Weather report not available, check back closer to launch day</Text></View>
     const launch = this.props.launch
+    console.log(launch.vidURLs[0])
     const normalizedDate = new Date(launch.net)
     const youtubeURL = `https://www.youtube.com/watch?v=njCDZWTI-xg`
-    console.log(launch.rocket.imageURL)
-    console.log(launch)
     return (
       <ScrollView style={styles.contentContainer}>
         <View style={styles.mainSection}>
@@ -60,11 +48,17 @@ class LaunchCellDetailView extends React.Component {
             <LaunchLocation location={launch.location}/>
           </View>
         </View>
-        {/* normalizedDate - Date.now() */}
-        {1 < 3600 ?
+        {/* {(normalizedDate - Date.now() < 3600 && launch.rocket.agencies[0].name === "SpaceX") ?
           <FontAwesome.Button size={60} backgroundColor='red' onPress={this.handleClick.bind(this, youtubeURL)} name="youtube-play"><Text style={{color: 'white'}}>Watch the Launch LIVE!</Text>
           </FontAwesome.Button>
-          : null }
+          : null } */}
+          {(normalizedDate - Date.now() < 3600 && launch.vidURLs[0]) ? <FontAwesome.Button size={60} backgroundColor='blue' onPress={this.handleClick.bind(this, launch.vidURLs[0])} name="youtube-play">
+            <View style={{flex: 1, flexDirection: 'column'}}>
+              <Text style={{color: 'white', fontSize: 20}}>Watch the launch LIVE</Text>
+              <Text style={{color: 'white', fontSize: 8}}>{launch.vidURLs[0]}</Text>
+            </View>
+          </FontAwesome.Button>
+          : null}
         <View style={styles.detailsSection}>
           <View style={styles.leftPane}>
             <Image style={{width: 50, height: 200}}source={{uri: launch.rocket.imageURL}}></Image>

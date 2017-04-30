@@ -1,6 +1,7 @@
 package com.awesomespacexp;
 
 import com.facebook.react.ReactActivity;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainActivity extends ReactActivity {

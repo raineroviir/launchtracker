@@ -6,7 +6,8 @@ const initialState = {
   pushNotifications: [],
   server: [],
   enabled: false,
-  seen: {}
+  seen: {},
+  badge: ''
 }
 
 export default function notifications(state = initialState, action) {
@@ -15,13 +16,17 @@ export default function notifications(state = initialState, action) {
       let list = action.list.map(fromParseObject);
       return {...state, server: list};
     case types.REGISTERED_PUSH_NOTIFICATIONS:
-      return {...state, registered: true}
+      return {...state, registered: true, enabled: true}
     case types.RECEIVED_PUSH_NOTIFICATION:
       return {...state, pushNotifications: append(action.notification, state.pushNotifications)}
     case types.TURNED_ON_PUSH_NOTIFICATIONS:
       return {...state, enabled: true}
+    case types.TURNED_OFF_PUSH_NOTIFICATIONS:
+      return {...state, enabled: false}
     case types.SEEN_ALL_NOTIFICATIONS:
       return {...state, seen: markAsSeen(state.pushNotifications)}
+    case types.UPDATE_APP_BADGE:
+      return {...state, badge: action.badge}
     default:
       return state
   }
@@ -32,7 +37,6 @@ function markAsSeen(notifications) {
   notifications.forEach((notification) => {
     seen[notification.id] = true
   })
-  console.log(seen)
   return seen
 }
 function append(notification, list) {
@@ -44,7 +48,6 @@ function append(notification, list) {
 }
 
 function fromParseObject(object: Object): Notification {
-  console.log(object)
   return {
     id: object.id,
     text: object.get('text'),

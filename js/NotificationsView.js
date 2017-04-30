@@ -40,21 +40,23 @@ class NotificationsView extends React.Component {
     )
   }
   openNotification(notification) {
-    const launch = this.props.upcomingLaunch
-    this.props.navigator.push({
-      component: LaunchCellDetailView,
-      title: launch.name,
-      passProps: {launch: launch}
-    })
+    function findCorrectLaunch(launches) {
+      return launches.filter((launch) => {
+        return launch.name.search(notification.launch) > 0
+      })
+    }
+    const launch = findCorrectLaunch(this.props.launches)[0]
+    if (launch) {
+      this.props.navigator.push({
+        component: LaunchCellDetailView,
+        title: launch.name,
+        passProps: {launch: launch}
+      })
+    } else {
+      return
+    }
   }
   render() {
-    console.log(this.props.notifications)
-    let modal;
-    if (this.props.nux) {
-      modal = (
-        <PushNUXModal onTurnOnNotifications={this.props.onTurnOnNotifications}  onSkipNotifications={this.props.onSkipNotifications} />
-      )
-    }
     return (
       <View style={{flex: 1}}>
         <PureListView
@@ -62,7 +64,6 @@ class NotificationsView extends React.Component {
         renderEmptyList={this.renderEmptyList}
         renderRow={this.renderRow}
         />
-        {modal}
       </View>
     )
   }
@@ -71,7 +72,7 @@ class NotificationsView extends React.Component {
 function select(store) {
   return {
     notifications: store.notifications.pushNotifications,
-    upcomingLaunch: upcomingLaunchSelector(store)
+    launches: store.schedule.launches
   }
 }
 
@@ -81,10 +82,5 @@ function actions(dispatch) {
     dispatch,
   }
 }
-
-const upcomingLaunchSelector = createSelector(
-  store => store.schedule.launches,
-  (schedule) => schedule[0]
-)
 
 export default connect(select, actions)(NotificationsView)

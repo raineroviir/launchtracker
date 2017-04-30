@@ -45,7 +45,6 @@ class ScheduleView extends React.Component {
     )
   }
   openLaunch(launch) {
-    console.log(launch)
     this.props.navigator.push({
       component: LaunchCellDetailView,
       title: launch.name,
@@ -53,7 +52,6 @@ class ScheduleView extends React.Component {
     })
   }
   render() {
-    console.log(this.props)
     return (
       <View style={{flex: 1}}>
         <PureListView

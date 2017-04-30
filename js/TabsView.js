@@ -13,6 +13,7 @@ import NotificationsView from './NotificationsView'
 import ScheduleView from './ScheduleView'
 import Icon from 'react-native-vector-icons/Ionicons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import SettingsView from './SettingsView'
 
 class TabsView extends React.Component {
   onTabSelect(tab: Tab) {
@@ -24,6 +25,14 @@ class TabsView extends React.Component {
     return (
       <View style={{flex: 1}}>
         <TabBarIOS>
+          <FontAwesome.TabBarItem
+            title="Settings"
+            selected={this.props.tab === 'settings'}
+            onPress={this.onTabSelect.bind(this, 'settings')}
+            iconName="gear"
+            >
+            <SettingsView navigator={this.props.navigator} />
+          </FontAwesome.TabBarItem>
           <Icon.TabBarItem
             title="Notifications"
             selected={this.props.tab === 'notifications'}

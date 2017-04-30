@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import PushNotification from 'react-native-push-notification'
 
-import { AppState } from 'react-native'
-import { storeDeviceToken, receivePushNotification, seenAllNotifications } from './actions/index'
+import { AppState, Platform } from 'react-native'
+import { storeDeviceToken, receivePushNotification, seenAllNotifications, updateBadge } from './actions/index'
 import { createSelector } from 'reselect'
+
 class PushNotificationsController extends Component {
   constructor() {
     super()
@@ -36,10 +37,11 @@ class PushNotificationsController extends Component {
     PushNotification.configure({
       onRegister: function(deviceToken) {
         dispatch(storeDeviceToken(deviceToken))
+        console.log('token', deviceToken)
       },
       onNotification: function(notification) {
-        console.log(notification)
         dispatch(receivePushNotification(notification))
+        console.log('notification', notification)
       },
       permissions: {
         alert: true,
@@ -62,8 +64,8 @@ class PushNotificationsController extends Component {
   }
   updateAppBadge() {
     if (this.props.enabled && Platform.OS === 'ios') {
-      PushNotificationIOS.setApplicationIconBadgeNumber(this.props.badge)
-      updateInstallation({badge: this.props.badge})
+      PushNotification.setApplicationIconBadgeNumber(this.props.badge)
+      updateBadge({badge: this.props.badge})
     }
   }
   render() {
@@ -72,8 +74,6 @@ class PushNotificationsController extends Component {
 }
 
 function unseenNotificationsCount(notifications, seen) {
-  console.log(notifications)
-  console.log(seen)
   return notifications.filter((notification) => !seen[notification.id]).length
 }
 

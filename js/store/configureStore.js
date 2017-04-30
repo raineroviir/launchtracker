@@ -11,8 +11,8 @@ const logger = createLogger({
 
 const createStoreWithMiddleware = applyMiddleware(thunk, promise, logger)(createStore)
 
-function configureStore() {
-  const store = createStoreWithMiddleware(reducers)
+function configureStore(preloadedState) {
+  const store = createStoreWithMiddleware(reducers, preloadedState)
 
   return store
 }

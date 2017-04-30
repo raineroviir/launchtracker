@@ -17,8 +17,6 @@ class NotificationCell extends React.Component {
       {this.props.notification.url}
       </Text>;
     }
-    console.log(this.props.notification)
-    console.log(this.props.isSeen)
     return (
       <TouchableHighlight onPress={this.props.onPress}>
         <View style={[styles.cell, !this.props.isSeen && styles.unseen]}>
@@ -37,7 +35,7 @@ class NotificationCell extends React.Component {
 
 var styles = StyleSheet.create({
   cell: {
-    padding: 50,
+    padding: 25,
     backgroundColor: 'white',
   },
   unseen: {
@@ -63,7 +61,7 @@ var styles = StyleSheet.create({
     marginBottom: 10,
   },
   time: {
-    color: 'black',
+    color: 'grey',
     fontSize: 12,
   },
 });

@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native'
 import setup from './js/setup'
 
-AppRegistry.registerComponent('AwesomeSpaceXp', () => setup);
+AppRegistry.registerComponent('Rocket Launch Tracker', () => setup);
